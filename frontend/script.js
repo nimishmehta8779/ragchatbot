@@ -1,6 +1,32 @@
 // API base URL - use relative path to work from any host
 const API_URL = '/api';
 
+// Theme management
+function initTheme() {
+    const saved = localStorage.getItem('theme') || 'dark';
+    applyTheme(saved, false);
+}
+
+function applyTheme(theme, animate = true) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    if (theme === 'light') {
+        btn.setAttribute('aria-label', 'Switch to dark mode');
+        btn.setAttribute('title', 'Switch to dark mode');
+    } else {
+        btn.setAttribute('aria-label', 'Switch to light mode');
+        btn.setAttribute('title', 'Switch to light mode');
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    localStorage.setItem('theme', next);
+}
+
 // Global state
 let currentSessionId = null;
 
@@ -15,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton = document.getElementById('sendButton');
     totalCourses = document.getElementById('totalCourses');
     courseTitles = document.getElementById('courseTitles');
-    
+
+    initTheme();
     setupEventListeners();
     createNewSession();
     loadCourseStats();
@@ -23,6 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function setupEventListeners() {
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+
     // Chat functionality
     sendButton.addEventListener('click', sendMessage);
     chatInput.addEventListener('keypress', (e) => {
